@@ -1,0 +1,92 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines_swapSS_name": {
+            "defaultValue": "swapSS",
+            "type": "String"
+        },
+        "disks_swapSS_OsDisk_1_4fc9ab8357794c0fa0832ee44746ca39_externalid": {
+            "defaultValue": "/subscriptions/e99e0db9-7538-4f1f-9641-463ad28bdfc4/resourceGroups/swapSS_group/providers/Microsoft.Compute/disks/swapSS_OsDisk_1_4fc9ab8357794c0fa0832ee44746ca39",
+            "type": "String"
+        },
+        "networkInterfaces_swapss256_externalid": {
+            "defaultValue": "/subscriptions/e99e0db9-7538-4f1f-9641-463ad28bdfc4/resourceGroups/swapSS_group/providers/Microsoft.Network/networkInterfaces/swapss256",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2022-08-01",
+            "name": "[parameters('virtualMachines_swapSS_name')]",
+            "location": "southindia",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_B1s"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "canonical",
+                        "offer": "0001-com-ubuntu-server-focal",
+                        "sku": "20_04-lts-gen2",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "osType": "Linux",
+                        "name": "[concat(parameters('virtualMachines_swapSS_name'), '_OsDisk_1_4fc9ab8357794c0fa0832ee44746ca39')]",
+                        "createOption": "FromImage",
+                        "caching": "ReadWrite",
+                        "managedDisk": {
+                            "storageAccountType": "Premium_LRS",
+                            "id": "[parameters('disks_swapSS_OsDisk_1_4fc9ab8357794c0fa0832ee44746ca39_externalid')]"
+                        },
+                        "deleteOption": "Delete",
+                        "diskSizeGB": 30
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_swapSS_name')]",
+                    "adminUsername": "azureuser",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": true,
+                        "ssh": {
+                            "publicKeys": [
+                                {
+                                    "path": "/home/azureuser/.ssh/authorized_keys",
+                                    "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC+IpHr39Ruge6XqyErnRX2X0e7Z4escKwaq9Kr59uKJDnV0dIZPODbC2RvhDUnvmpGDIq8hfPrGwvNRHj4QjLHkwpFmBc+Rq5vkGOjf1EQIuYeMLTTA6ua5as4ixWMPLB7o0RPiltx869kK0VvpLd/aaAqc/pGOk1mi59TguecvwhZ5mp1M+G62s1UlB3rBHetyTh0Pwk1b/xNe9SWxazDURHvVKo1dn/1NQX10XZP6C/CTV8pTLFlhrUkGXiKMs0aZQLMU62rppFkpU0nFGWLz5SCZffr9WZ8jJp3Vfkeuym09xc4Kp1kkMc+ZZD83883HyIrjAXSTRj++8oIspZPeZUSa645OQBhYmi0RdqJK4orj6uDkKdNJHB9hj+a2tjLBaODfIv7+wvT7yvzb89mMGg96OI6zyxSqAKeVhHShbV4FHWG0rH5APUmA/+AElQEIckv73QgaaIp2Jeyv5pfsaBZMhDAMaE/fvMVshycjBTb+WPk25V6m0boRoLPPVE= generated-by-azure"
+                                }
+                            ]
+                        },
+                        "provisionVMAgent": true,
+                        "patchSettings": {
+                            "patchMode": "ImageDefault",
+                            "assessmentMode": "ImageDefault"
+                        },
+                        "enableVMAgentPlatformUpdates": false
+                    },
+                    "secrets": [],
+                    "allowExtensionOperations": true,
+                    "requireGuestProvisionSignal": true
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[parameters('networkInterfaces_swapss256_externalid')]",
+                            "properties": {
+                                "deleteOption": "Detach"
+                            }
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true
+                    }
+                }
+            }
+        }
+    ]
+}
